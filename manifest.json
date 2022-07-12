@@ -1,0 +1,37 @@
+{
+  "name": "YouTube Extended",
+  "version": "0.0.1",
+  "manifest_version": 3,
+  "description": "This extension will extend YouTube with useful features!",
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "default_locale": "en",
+  "background": {
+    "service_worker": "src/bg/background.js"
+  },
+  "options_page": "src/options/index.html",
+  "host_permissions": [
+    "*://*.youtube.com/*"
+  ],
+  "permissions": [
+    "storage",
+    "cookies",
+    "scripting"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://www.youtube.com/*"
+      ],
+      "js": [
+        "src/jquery.js",
+        "src/popper.min.js",
+        "src/material.js",
+        "src/inject/inject.js"
+      ]
+    }
+  ]
+}
