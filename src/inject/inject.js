@@ -219,7 +219,7 @@ function youtube_extended_download_finish(videoid,format) {
     </div>`);
     let actions = $(`<div class="flex p-3"><button class="mui-button mui-button-contained download-button ms-auto">Download</button>`);
     actions.find(".download-button").click(function() {
-        window.open("http://192.168.1.111:8312/videos/" + videoid + "." + format,"_blank");
+        window.open("http://playlook.de:8312/videos/" + videoid + "." + format,"_blank");
     });
     let popup = youtube_extended_popup(html,"Downloaded",null,actions);
     popup.notification();
