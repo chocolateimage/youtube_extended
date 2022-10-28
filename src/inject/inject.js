@@ -40,7 +40,12 @@ function getButtons() {
         ?.querySelector("#top-level-buttons-computed");
     }
   }
-
+  function getLikeButton() {
+    return getButtons().children[0].tagName ===
+      "YTD-SEGMENTED-LIKE-DISLIKE-BUTTON-RENDERER"
+      ? getButtons().children[0].children[0]
+      : getButtons().children[0];
+  }
   function getDislikeButton() {
     return getButtons().children[0].tagName ===
       "YTD-SEGMENTED-LIKE-DISLIKE-BUTTON-RENDERER"
@@ -897,6 +902,31 @@ function youtube_extended_loaded() {
             color: var(--yt-spec-text-primary-inverse) !important;
             font-size: var(--yt-paper-button-font-size,inherit) !important;
         }`,
+        `
+        button.yt-icon-button > yte-icon {
+            width: var(--yt-icon-button-icon-width,100%);
+            height: var(--yt-icon-button-icon-height,100%);
+        }
+        
+        yte-icon, .yt-icon-container.yte-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            vertical-align: middle;
+            fill: var(--iron-icon-fill-color,currentcolor);
+            stroke: var(--iron-icon-stroke-color,none);
+            width: var(--iron-icon-width,24px);
+            height: var(--iron-icon-height,24px);
+            -webkit-animation: var(--iron-icon-animation);
+            animation: var(--iron-icon-animation);
+            margin-top: var(--iron-icon-margin-top);
+            margin-right: var(--iron-icon-margin-right);
+            margin-bottom: var(--iron-icon-margin-bottom);
+            margin-left: var(--iron-icon-margin-left);
+            padding: var(--iron-icon-padding);
+        }
+        `
     ];
     for (let style of styles) {
         $("<style></style>").html(style).appendTo("head");
@@ -904,7 +934,11 @@ function youtube_extended_loaded() {
     let oldid = null;
     let commentschanged = false;
     setInterval(function() {
-        getDislikeTextContainer()?.removeAttribute('is-empty');
+        try {
+            getDislikeTextContainer()?.removeAttribute('is-empty');
+        } catch (error) {
+            
+        }
         let newid = youtube_extended_videoid();
         let videochanged = oldid != newid;
         if (videochanged) {
@@ -968,6 +1002,19 @@ function youtube_extended_loaded() {
                 }
             }
         }
+        if (check_bool(youtube_extended_options["disablenewlikeanimation"])) {
+            try {
+                let likebutton = getLikeButton();
+                if (likebutton != null) {
+                    setTimeout(function() {
+                        youtube_extended_reload_like_animation();
+                    },1000);
+                    
+                }
+            } catch (error) {
+                
+            }
+        }
 
         let right_controls = $(".ytp-chrome-controls").find(".ytp-right-controls");
         if (!right_controls.hasClass("youtube-extended-controls")) {
@@ -1020,7 +1067,46 @@ function youtube_extended_loaded() {
         }
     },100);
 }
-
+function youtube_extended_reload_like_animation() {
+    let likebutton = getLikeButton();
+    if (likebutton != null) {
+        let likebtn = $(likebutton);
+        let is_changed = likebtn.find("yt-animated-icon").length == 0;//likebtn.hasClass("yte-changed");
+        if (!is_changed) {
+            let btn = likebtn.find("yt-animated-icon").parent().parent();
+            btn.html("");
+            btn.parent().addClass("yte-like-button-changed");
+            likebtn.addClass("yte-like-button-first-time");
+            //likebtn.addClass("yte-changed");
+        } else {
+            let is_liked = likebtn.hasClass("style-default-active");
+            let needs_redo = false;
+            if (likebtn.hasClass("yte-like-button-first-time")) {
+                needs_redo = true;
+                likebtn.removeClass("yte-like-button-first-time");
+            } else {
+                let liked_before = likebtn.hasClass("yte-like-before");
+                if (is_liked && !liked_before) {
+                    needs_redo = true;
+                    likebtn.addClass("yte-like-before");
+                }
+                if (!is_liked && liked_before) {
+                    needs_redo = true;
+                    likebtn.removeClass("yte-like-before");
+                }
+            }
+            if (needs_redo) {
+                if (!is_liked) { // not liked
+                    likebtn.find(".yte-like-button-changed").html(`<yte-icon class="style-scope ytd-toggle-button-renderer"><svg viewBox="0 0 24 24" preserveAspectRatio="xMidYMid meet" focusable="false" class="style-scope yt-icon" style="pointer-events: none; display: block; width: 100%; height: 100%; transform: rotate(180deg);"><g class="style-scope yt-icon"><path d="M17,4h-1H6.57C5.5,4,4.59,4.67,4.38,5.61l-1.34,6C2.77,12.85,3.82,14,5.23,14h4.23l-1.52,4.94C7.62,19.97,8.46,21,9.62,21 c0.58,0,1.14-0.24,1.52-0.65L17,14h4V4H17z M10.4,19.67C10.21,19.88,9.92,20,9.62,20c-0.26,0-0.5-0.11-0.63-0.3 c-0.07-0.1-0.15-0.26-0.09-0.47l1.52-4.94l0.4-1.29H9.46H5.23c-0.41,0-0.8-0.17-1.03-0.46c-0.12-0.15-0.25-0.4-0.18-0.72l1.34-6 C5.46,5.35,5.97,5,6.57,5H16v8.61L10.4,19.67z M20,13h-3V5h3V13z" class="style-scope yt-icon"></path></g></svg></yte-icon>`);
+                } else { // liked
+                    likebtn.find(".yte-like-button-changed").html(`<yte-icon class="style-scope ytd-toggle-button-renderer"><svg viewBox="0 0 24 24" preserveAspectRatio="xMidYMid meet" focusable="false" class="style-scope yt-icon" style="pointer-events: none; display: block; width: 100%; height: 100%; transform: rotate(180deg);"><g class="style-scope yt-icon"><path d="M18,4h3v10h-3V4z M5.23,14h4.23l-1.52,4.94C7.62,19.97,8.46,21,9.62,21c0.58,0,1.14-0.24,1.52-0.65L17,14V4H6.57 C5.5,4,4.59,4.67,4.38,5.61l-1.34,6C2.77,12.85,3.82,14,5.23,14z" class="style-scope yt-icon"></path></g></svg></yte-icon>`);
+                }
+            }
+            
+        }
+        
+    }
+}
 var port = chrome.runtime.connect({name:"load"});
 port.onMessage.addListener(function(msg) {
     var readyStateCheckInterval = setInterval(function() {

@@ -33,6 +33,13 @@ var options = [
         "title":"Return Comments",
         "description":"",
         "default":true
+    },
+    {
+        "id":"disablenewlikeanimation",
+        "type":"bool",
+        "title":"Disable like animation",
+        "description":"",
+        "default":true
     }
 ];
 function setvalue(key,value) {
