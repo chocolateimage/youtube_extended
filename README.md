@@ -11,7 +11,7 @@ Adds new features:
 - 📷 And more!
 
 # Installation
-1. Download the repository as a ZIP file: [https://github.com/chocolateimage/youtube_extended/archive/refs/heads/master.zip](https://github.com/chocolateimage/youtube_extended/archive/refs/heads/master.zip)
+1. Download the repository as a ZIP file: [download](https://github.com/chocolateimage/youtube_extended/archive/refs/heads/master.zip)
 2. Unzip the ZIP file that the folder contains "src", "manifest.json"...
 3. Go to `chrome://extensions` or `edge://extensions`
 4. Enable developer mode (top right)
