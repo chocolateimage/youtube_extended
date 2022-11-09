@@ -4,6 +4,7 @@
 YouTube Extended is a Chrome Extension (maybe Firefox later) that adds new features to YouTube!
 
 Adds new features:
+
 - 💬 Comments to disabled comments videos
 - 📥 Download video
 - ✨ Old description
